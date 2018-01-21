@@ -69,7 +69,10 @@ setup-develop:
 test: ambassador-test
 
 ambassador-test: setup-develop ambassador/ambassador/VERSION.py
-	cd ambassador && pytest --tb=short --cov=ambassador --cov-report term-missing
+	export PYTHONPATH=""
+	echo PYTHONPATH=${PYTHONPATH}
+	python -c "import scout; print(scout.__file__)"
+	# cd ambassador && pytest --tb=short --cov=ambassador --cov-report term-missing
 
 e2e end-to-end:
 	sh end-to-end/testall.sh

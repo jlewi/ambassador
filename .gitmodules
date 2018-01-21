@@ -1,0 +1,3 @@
+[submodule "git_istio_proxy"]
+	path = git_istio_proxy
+	url = git@github.com:istio/proxy.git

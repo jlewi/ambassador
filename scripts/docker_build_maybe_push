@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 # DOCKER_REGISTRY controls the namespace we'll use for the build, and
 # whether we push.
@@ -9,9 +9,10 @@ TARGET="$3"
 
 HERE=$(dirname $0)
 eval $(sh $HERE/get_registries.sh)
-
-docker build $EXTRA_DOCKER_ARGS -t "${DOCKER_REGISTRY}${NAME}:${VERSION}" "${TARGET}"
+TAG=$(date +v%Y%m%d)-$(git describe --tags --always --dirty)-$(git diff | sha256sum | cut -c -6)
+docker build $EXTRA_DOCKER_ARGS -t "${DOCKER_REGISTRY}${NAME}:${TAG}" "${TARGET}"
 
 if [ -n "$DOCKER_REGISTRY" ]; then
-    docker push "${DOCKER_REGISTRY}${NAME}:${VERSION}"
+    gcloud docker  -- push "${DOCKER_REGISTRY}${NAME}:${TAG}"
+    echo pushed "${DOCKER_REGISTRY}${NAME}:${TAG}"
 fi

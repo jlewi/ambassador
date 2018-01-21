@@ -30,3 +30,6 @@ forge.yaml
 .idea
 *.iml
 tags
+
+# Virtual env
+py_env

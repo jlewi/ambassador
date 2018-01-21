@@ -13,7 +13,7 @@
           {%- if tls.cert_required -%}"require_client_certificate": true{%- endif %}
         {%- endif %}
       },
-      {%- endif -%}
+      {%- endif -%}      
       "filters": [
         {
           "type": "read",
@@ -67,6 +67,25 @@
               ]
             },
             "filters": [
+              {
+                "type": "decoder",
+                "name": "jwt-auth",
+                "config": {                  
+                  "issuers": [
+                    {
+                      "name": "https://cloud.google.com/iap",
+                      "audiences": [
+                        "/projects/991277910492/global/backendServices/31"
+                      ],
+                      "pubkey": {
+                        "type": "jwks",
+                        "uri": "https://www.gstatic.com/iap/verify/public_key-jwk",
+                        "cluster": "iap_issuer"
+                      }
+                    }
+                  ]
+                }
+              },
               {% for filter in filters -%}
               { 
                 "type": "{{ filter.type }}",
@@ -86,6 +105,23 @@
   },
   "cluster_manager": {
     "clusters": [
+      {
+        "name": "https://cloud.google.com/iap",
+        "connect_timeout_ms": 5000,
+        "type": "strict_dns",
+        "circuit_breakers": {
+         "default": {
+          "max_pending_requests": 10000,
+          "max_requests": 10000
+         }
+        },
+        "lb_type": "round_robin",
+        "hosts": [
+          {
+            "url": "tcp://www.gstatic.com:80"
+          }
+        ]
+      },
       {% for cluster in clusters -%}
       {
         "name": "{{ cluster.name }}",
